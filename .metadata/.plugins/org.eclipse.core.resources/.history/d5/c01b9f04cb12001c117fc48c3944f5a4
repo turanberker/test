@@ -1,0 +1,10 @@
+package com.pim.constraints;
+
+public class ProductConstraints extends BaseConstraints {
+
+	private ProductConstraints() {
+
+	}
+
+	public static final String TABLE_NAME = "PRODUCT";
+}

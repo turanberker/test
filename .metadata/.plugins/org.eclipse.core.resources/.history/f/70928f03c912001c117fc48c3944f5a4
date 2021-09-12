@@ -1,0 +1,46 @@
+package com.berker.servicebase;
+
+import java.math.BigDecimal;
+
+import javax.persistence.Column;
+import javax.persistence.ForeignKey;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.MappedSuperclass;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
+import com.orderManagement.orderManagement.entity.CategoryEntity;
+
+import constants.CategoryConstraints;
+
+@MappedSuperclass
+public class BaseEntity {
+	
+	@Column(name="NAME" ,nullable=false)
+	@Size(max=CategoryConstraints.NAME_MAX)
+	private String name;
+	
+	@NotNull
+	@ManyToOne
+	@JoinColumn(name="CATEGORY_ID",foreignKey=@ForeignKey(name="FK_PRODUCT_CAT0"))
+	private CategoryEntity category;
+	
+	@Min(0)
+	@Column(name="PRICE")
+	private BigDecimal price;
+	
+	@Min(0)
+	@Column(name="STOCK_QUANTITY")
+	private Integer stockQuantity;
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+}

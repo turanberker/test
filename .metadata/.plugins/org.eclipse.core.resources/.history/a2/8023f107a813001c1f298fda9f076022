@@ -1,0 +1,5 @@
+package com.orderManagement.orderManagement.data;
+
+public class OrderStatus {
+
+}

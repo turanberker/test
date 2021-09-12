@@ -1,0 +1,14 @@
+package com.orderManagement.orderManagement.entity;
+
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
+import com.berker.servicebase.entity.BaseEntity;
+import com.orderManagement.orderManagement.constraints.OrderConstraints;
+
+@Entity
+@Table(name=OrderConstraints.TABLE_NALE)
+public class OrderEntity extends BaseEntity{
+
+		private String address;
+}

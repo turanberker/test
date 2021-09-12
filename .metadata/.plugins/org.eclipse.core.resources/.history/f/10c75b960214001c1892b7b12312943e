@@ -1,0 +1,40 @@
+package com.berker.servicebase.exceptions;
+
+import java.util.Date;
+
+public class BaseException extends RuntimeException {
+	private Date timeStamp;
+
+	private String className;
+
+	
+	
+	public BaseException() {
+		super();
+	}
+
+	public BaseException(Date timeStamp, String className) {
+		super();
+		this.timeStamp = timeStamp;
+		this.className = className;
+	}
+
+	public Date getTimeStamp() {
+		return timeStamp;
+	}
+
+	public void setTimeStamp(Date timeStamp) {
+		this.timeStamp = timeStamp;
+	}
+
+	public String getClassName() {
+		return className;
+	}
+
+	public void setClassName(String className) {
+		this.className = className;
+	}
+	
+	
+
+}

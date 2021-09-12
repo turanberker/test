@@ -1,0 +1,5 @@
+package com.pim.converter;
+
+public interface ProductEntityModelConverter {
+
+}

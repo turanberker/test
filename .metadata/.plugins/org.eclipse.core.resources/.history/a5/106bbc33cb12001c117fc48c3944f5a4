@@ -1,0 +1,14 @@
+package com.pim;
+
+import org.springframework.boot.SpringApplication;
+
+import com.orderManagement.orderManagement.OrderManagementApplication;
+
+public class PIMApplication {
+	
+	public static void main(String[] args) {
+		SpringApplication.run(OrderManagementApplication.class, args);
+	}
+
+
+}

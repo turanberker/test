@@ -1,0 +1,5 @@
+package com.orderManagement.orderManagement.constraints;
+
+public class OrderDetayilConstraints {
+
+}

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aop-reference-model>
+<aop-project name="service-base"/>
+<aop-project name="product-instance-management-service"/>
+<aop-project name="eureka"/>
+<aop-project name="orderManagement"/>
+<aop-project name="api-gateway"/>
+</aop-reference-model>

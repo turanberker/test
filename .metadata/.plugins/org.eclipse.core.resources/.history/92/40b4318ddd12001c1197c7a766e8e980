@@ -1,0 +1,40 @@
+package com.pim.service;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.pim.entity.CategoryEntity;
+import com.pim.repository.CategoryReporitory;
+import com.sun.istack.NotNull;
+
+@Service
+public class CategoryService {
+
+	@Autowired
+	private CategoryReporitory repository;
+
+	public void ekle(String name) {
+		CategoryEntity entity = new CategoryEntity();
+		entity.setName(name);
+		repository.save(entity);
+	}
+
+	public CategoryEntity findById(@NotNull Long id) {
+		Optional<CategoryEntity> entity = repository.findById(id);
+
+		if (entity.isPresent()) {
+			return null;
+		} else {
+			return entity.get();
+		}
+	}
+	
+	public List<CategoryEntity> findByName(String name){
+		
+		return null;
+		
+	}
+}

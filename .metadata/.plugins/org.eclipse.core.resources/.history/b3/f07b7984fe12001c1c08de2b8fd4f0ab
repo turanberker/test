@@ -1,0 +1,5 @@
+package com.pim.service;
+
+public class ProductService {
+
+}

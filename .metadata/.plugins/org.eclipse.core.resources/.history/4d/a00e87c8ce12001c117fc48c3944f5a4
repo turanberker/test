@@ -1,0 +1,20 @@
+package com.pim.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.pim.entity.CategoryEntity;
+import com.pim.repository.CategoryReporitory;
+
+@Service
+public class CategoryService {
+
+	@Autowired
+	private CategoryReporitory repository;
+
+	public void ekle(String name) {
+		CategoryEntity entity = new CategoryEntity();
+		entity.setName(name);
+		repository.save(entity);
+	}
+}

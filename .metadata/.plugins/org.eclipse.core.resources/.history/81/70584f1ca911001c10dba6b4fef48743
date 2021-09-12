@@ -1,0 +1,26 @@
+package com.orderManagement.orderManagement.entity;
+
+import java.util.Date;
+
+import javax.persistence.Id
+import javax.persistence.MappedSuperclass;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import org.springframework.data.annotation.CreatedDate;
+
+@MappedSuperclass
+public class BaseEntity {
+	
+	@Id
+	private Long id;
+	
+	@CreatedDate
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date createdDate;
+	
+	@Update
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date updatedDate;
+
+}

@@ -1,0 +1,5 @@
+package com.orderManagement.orderManagement.dto;
+
+public class OrderDetailModel {
+
+}

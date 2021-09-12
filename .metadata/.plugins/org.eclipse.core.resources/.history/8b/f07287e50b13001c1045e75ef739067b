@@ -1,0 +1,17 @@
+package com.berker.servicebase;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+public class TrObjectMapper {
+	
+	public final static ObjectMapper mapper;
+	
+	static {
+		mapper=new ObjectMapper();
+		
+	//	mapper.disable(feature)
+	}
+	
+	
+
+}

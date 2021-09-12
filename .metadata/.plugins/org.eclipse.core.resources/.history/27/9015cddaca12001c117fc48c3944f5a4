@@ -1,0 +1,5 @@
+package com.berker.servicebase.constraints;
+
+public class BaseConstraint {
+
+}

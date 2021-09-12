@@ -1,0 +1,5 @@
+package com.berker.servicebase.configuration;
+
+public class ExceptionHandle {
+
+}

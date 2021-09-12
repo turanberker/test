@@ -1,0 +1,19 @@
+package com.orderManagement.orderManagement.feigns;
+
+import java.util.List;
+
+import org.springframework.cloud.netflix.feign.FeignClient;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
+import com.pim.dto.ProductModel;
+
+@FeignClient(name = "Procut-service", path = "/product")
+public interface ProductFeignClient {
+
+	@GetMapping(path = "/getByIdList/{list}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<ProductModel>> getByIdList(@PathVariable(value = "list") List<Long> productIdList);
+}

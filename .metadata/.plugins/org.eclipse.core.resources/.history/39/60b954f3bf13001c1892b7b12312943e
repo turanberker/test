@@ -1,0 +1,21 @@
+package com.orderManagement.orderManagement.feigns;
+
+import java.util.List;
+
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
+import com.orderManagement.orderManagement.dto.OmProductModel;
+
+@FeignClient(name = "Procut-service", path = "/product")
+public interface ProductFeignClient {
+
+	@GetMapping(path = "/getByIdList/{list}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<OmProductModel>> getByIdList(@PathVariable(value = "list") List<Long> productIdList);
+	
+	@GetMapping(path = "/test", produces = MediaType.APPLICATION_JSON_VALUE)
+	public String test(@PathVariable(value = "list") List<Long> productIdList);
+}

@@ -1,0 +1,9 @@
+package com.orderManagement.orderManagement.feigns;
+
+
+import org.springframework.cloud.netflix.feign.FeignClient;
+
+@FeignClient(name="Procut-service", path="/product")
+public interface ProductFeignClient {
+
+}

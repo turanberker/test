@@ -1,0 +1,5 @@
+package com.berker.servicebase.exceptions;
+
+public class DataNotFoundException extends RuntimeException {
+
+}

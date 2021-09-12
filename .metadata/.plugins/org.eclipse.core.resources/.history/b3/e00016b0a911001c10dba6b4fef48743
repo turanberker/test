@@ -1,0 +1,11 @@
+package constants;
+
+public class KategoriConstraints extends BaseConstraints {
+
+	
+	private KategoriConstraints() {
+		//initlenmesin diye yazılmıştır
+	}
+	
+	public static final String TABLE_NAME="KATEGORY";
+}

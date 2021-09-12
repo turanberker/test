@@ -1,0 +1,20 @@
+package com.berker.servicebase.exceptions;
+
+
+public class DataNotFoundException extends RuntimeException{
+
+	private Object parameter;
+	
+	
+	protected DataNotFoundException(){
+		
+	}
+
+
+	public DataNotFoundException(Object parameter,String message) {
+		super(message);
+		this.parameter = parameter;
+			}
+	
+	
+}

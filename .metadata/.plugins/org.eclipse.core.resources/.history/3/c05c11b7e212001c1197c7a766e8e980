@@ -1,0 +1,12 @@
+package com.berker.servicebase.dto;
+
+import javax.validation.constraints.Positive;
+
+import com.sun.istack.NotNull;
+
+public class BaseModel {
+
+	@NotNull
+	@Positive
+	private Long id;
+}

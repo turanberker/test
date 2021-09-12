@@ -1,0 +1,21 @@
+package com.pim.dto;
+
+import java.math.BigDecimal;
+
+import javax.persistence.Column;
+import javax.validation.constraints.Min;
+
+public class NewProductModel {
+
+	private String name;
+
+	private Long categoryId;
+
+	@Min(0)
+	
+	private BigDecimal price;
+
+	@Min(0)
+	
+	private Integer stockQuantity;
+}

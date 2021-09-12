@@ -1,0 +1,5 @@
+package com.pim.repository;
+
+public class ProductRepository {
+
+}

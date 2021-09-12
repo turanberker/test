@@ -1,0 +1,10 @@
+package com.berker.servicebase.constraints;
+
+public class BaseConstraints {
+
+	protected BaseConstraints() {
+
+	}
+
+	public static final String NAME_MAX = 75;
+}

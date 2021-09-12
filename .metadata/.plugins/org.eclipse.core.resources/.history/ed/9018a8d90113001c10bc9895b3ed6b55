@@ -1,0 +1,15 @@
+package com.pim.converter;
+
+import org.mapstruct.Mapper;
+
+import com.pim.dto.ProductModel;
+import com.pim.entity.ProductEntity;
+
+
+public interface ProductEntityModelConverter {
+
+	 ProductModel entityToModel(ProductEntity entity);
+	    
+	 ProductEntity modelToEntity(ProductModel model);
+	
+}

@@ -1,0 +1,7 @@
+package com.orderManagement.orderManagement.exceptions;
+
+import com.berker.servicebase.exceptions.BaseException;
+
+public class NotEnoughStockException extends BaseException{
+
+}

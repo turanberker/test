@@ -1,0 +1,9 @@
+package com.berker.servicebase.configuration;
+
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.servlet.handler.AbstractHandlerExceptionResolver;
+
+@ControllerAdvice 
+public class ExceptionHandle extends ResponseEntityExceptionHandler   {
+
+}

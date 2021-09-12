@@ -1,0 +1,8 @@
+package com.orderManagement.orderManagement.entity;
+
+import javax.persistence.Entity;
+
+@Entity
+public class ProductEntity extends BaseEntity {
+
+}

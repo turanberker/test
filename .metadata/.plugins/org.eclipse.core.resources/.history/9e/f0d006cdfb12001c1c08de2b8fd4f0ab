@@ -1,0 +1,45 @@
+package com.pim.service;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.berker.servicebase.TrObjectMapper;
+import com.berker.servicebase.exceptions.DataNotFoundException;
+import com.pim.dto.CategoryModel;
+import com.pim.entity.CategoryEntity;
+import com.pim.repository.CategoryReporitory;
+import com.sun.istack.NotNull;
+
+@Service
+public class CategoryService {
+
+	@Autowired
+	private CategoryReporitory repository;
+
+	public CategoryModel save(String name) {
+		CategoryEntity entity = new CategoryEntity();
+		entity.setName(name);
+		repository.save(entity);
+		return TrObjectMapper.mapper.convertValue(entity, CategoryModel.class);
+
+	}
+
+	public CategoryModel findById(@NotNull Long id) {
+		Optional<CategoryEntity> entity = repository.findById(id);
+
+		if (entity.isPresent()) {
+			throw new DataNotFoundException();
+		} else {
+			return TrObjectMapper.mapper.convertValue(entity.get(), CategoryModel.class);
+		}
+	}
+
+	public List<CategoryEntity> findByName(String name) {
+		return repository.findByNameLike(name);
+	}
+	
+	
+}

@@ -1,0 +1,11 @@
+package com.pim.entity;
+
+public class BaseConstraints {
+	
+	protected BaseConstraints() {
+
+	}
+	
+	public static final int NAME_MAX=75;
+
+}

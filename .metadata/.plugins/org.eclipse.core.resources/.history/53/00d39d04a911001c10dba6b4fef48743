@@ -1,0 +1,5 @@
+package com.orderManagement.orderManagement.entity;
+
+public class BaseEntity {
+
+}

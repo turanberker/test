@@ -1,0 +1,16 @@
+package com.orderManagement.orderManagement.services;
+
+import javax.validation.Valid;
+
+import org.springframework.stereotype.Service;
+
+import com.orderManagement.orderManagement.dto.NewOrderModel;
+
+@Service
+public class OrderService {
+
+	public void save(@Valid NewOrderModel newOrder) {
+		
+	}
+	
+}
