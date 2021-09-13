@@ -15,34 +15,46 @@ import javax.validation.constraints.Size;
 import com.berker.servicebase.entity.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.orderManagement.orderManagement.constraints.OrderDetailConstraints;
+import com.orderManagement.orderManagement.dto.OmProductModel;
 
 @Entity
-@Table(name=OrderDetailConstraints.TABLE_NALE)
-public class OrderDetailEntity extends BaseEntity{
-	
+@Table(name = OrderDetailConstraints.TABLE_NALE)
+public class OrderDetailEntity extends BaseEntity {
+
 	@JsonIgnore
-	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="ORDER_ID",updatable=false)
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "ORDER_ID", updatable = false)
 	private OrderEntity order;
-	
+
 	@NotNull
-	@Column(name="PRODUCT_ID",updatable=false)
+	@Column(name = "PRODUCT_ID", updatable = false)
 	private Long productId;
-	
+
 	@NotNull
-	@Size(max=OrderDetailConstraints.NAME_MAX)
+	@Size(max = OrderDetailConstraints.NAME_MAX)
 	private String categoryName;
-	
+
 	@NotNull
-	@Size(max=OrderDetailConstraints.NAME_MAX)
+	@Size(max = OrderDetailConstraints.NAME_MAX)
 	private String produtName;
-	
+
 	@NotNull
 	@Min(0)
 	private Integer quantity;
-	
+
 	@NotNull
 	private BigDecimal unitPrice;
+
+	public OrderDetailEntity(OmProductModel productModel) {
+		this.productId = productModel.getId();
+		this.categoryName = productModel.getCategory().getName();
+		this.produtName = productModel.getName();
+		this.unitPrice=productModel.getPrice();
+	}
+
+	protected OrderDetailEntity() {
+		super();
+	}
 
 	public OrderEntity getOrder() {
 		return order;
@@ -91,6 +103,5 @@ public class OrderDetailEntity extends BaseEntity{
 	public void setUnitPrice(BigDecimal unitPrice) {
 		this.unitPrice = unitPrice;
 	}
-	
-	
+
 }

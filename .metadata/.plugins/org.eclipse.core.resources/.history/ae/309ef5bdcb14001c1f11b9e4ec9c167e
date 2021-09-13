@@ -1,0 +1,25 @@
+package com.orderManagement.orderManagement.dto;
+
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.Size;
+
+import com.orderManagement.orderManagement.constraints.OrderConstraints;
+import com.orderManagement.orderManagement.data.OrderStatus;
+import com.orderManagement.orderManagement.data.OrderStatusConverter;
+
+public class OrderModel {
+
+	@NotNull
+	@Positive
+	private Long id;
+
+	@NotNull
+	@Size(min = OrderConstraints.DETAIL_STRING_MIN, max = OrderConstraints.DETAIL_STRING_MAX)
+	private String address;
+
+	@NotNull
+	private OrderStatus orderStatus = OrderStatus.NEW;
+}

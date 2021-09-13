@@ -28,8 +28,8 @@ import com.berker.servicebase.exceptions.NotEnoughStock;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.pim.dto.NewProductModel;
 import com.pim.dto.ProductModel;
-import com.pim.dto.ReduceFromStockModel;
-import com.pim.dto.ReduceItemFromStockModel;
+import com.pim.dto.StockItemMovementModel;
+import com.pim.dto.StockMovementModel;
 import com.pim.dto.UpdateStockModel;
 import com.pim.entity.CategoryEntity;
 import com.pim.entity.ProductEntity;
@@ -64,7 +64,7 @@ public class ProductService extends BaseRestController {
 
 		Path<CategoryEntity> kategoryPath = user.get("category");
 
-		List<Predicate> predicates = new ArrayList();
+		List<Predicate> predicates = new ArrayList<>();
 
 		predicates.add(cb.equal(kategoryPath.get("id"), categoryId));
 
@@ -82,6 +82,16 @@ public class ProductService extends BaseRestController {
 
 	}
 
+	public ProductModel getById(@NotNull @Positive Long productId) {
+		Optional<ProductEntity> productOp = repository.findById(productId);
+		if(productOp.isPresent()) {
+			return TrObjectMapper.mapper.convertValue(productOp.get(), ProductModel.class);
+		}else {
+			throw new DataNotFoundException(  ProductService.class.getName() ,MessageFormat.format("Product with ID={0} is not exists" , productId));
+		}
+		
+	}
+
 	public ProductModel updateStockQuantity(@Valid UpdateStockModel stokGuncelleModel) {
 		Optional<ProductEntity> productOp = repository.findById(stokGuncelleModel.getProductId());
 
@@ -96,7 +106,7 @@ public class ProductService extends BaseRestController {
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	public void reduceFromStock(@Valid ReduceFromStockModel reduceFromStock) {
+	public void reduceFromStock(@Valid StockMovementModel reduceFromStock) {
 
 		List<Long> productIdList = reduceFromStock.getItemList().stream().map(e -> e.getProductId())
 				.collect(Collectors.toList());
@@ -108,19 +118,48 @@ public class ProductService extends BaseRestController {
 		}
 
 		List<ProductEntity> entitytoUpdate = new ArrayList<>();
-		for (ReduceItemFromStockModel fromStockModel : reduceFromStock.getItemList()) {
+		for (StockItemMovementModel fromStockModel : reduceFromStock.getItemList()) {
 			Optional<ProductEntity> op = productEntityList.stream()
 					.filter(e -> e.getId().equals(fromStockModel.getProductId())).findFirst();
 			if (op.isPresent()) {
 				ProductEntity entity = op.get();
-				if (entity.getStockQuantity() < fromStockModel.getQuantityToReduce()) {
+				if (entity.getStockQuantity() < fromStockModel.getQuantity()) {
 					throw new NotEnoughStock(
-							MessageFormat.format("{0} id li ürünün stoğu yetersiz", fromStockModel.getProductId()),ProductEntity.class.getName());
+							MessageFormat.format("{0} id li ürünün stoğu yetersiz", fromStockModel.getProductId()),
+							ProductEntity.class.getName());
 				} else {
-					entity.setStockQuantity(entity.getStockQuantity() - fromStockModel.getQuantityToReduce());
+					entity.setStockQuantity(entity.getStockQuantity() - fromStockModel.getQuantity());
 					entitytoUpdate.add(entity);
 				}
 
+			} else {
+				throw new DataNotFoundException(ProductEntity.class.getName(),
+						fromStockModel.getProductId() + " ID Lİ KAYITLAR BULUNAMADI");
+			}
+		}
+		repository.saveAllAndFlush(entitytoUpdate);
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	public void addToStock(@Valid StockMovementModel addToStock) {
+
+		List<Long> productIdList = addToStock.getItemList().stream().map(e -> e.getProductId())
+				.collect(Collectors.toList());
+		List<ProductEntity> productEntityList = repository.findAllById(productIdList);
+
+		if (productEntityList.size() != productIdList.size()) {
+			throw new DataNotFoundException(ProductEntity.class.getName(),
+					productIdList.toString() + " ID Lİ KAYITLAR BULUNAMADI");
+		}
+
+		List<ProductEntity> entitytoUpdate = new ArrayList<>();
+		for (StockItemMovementModel fromStockModel : addToStock.getItemList()) {
+			Optional<ProductEntity> op = productEntityList.stream()
+					.filter(e -> e.getId().equals(fromStockModel.getProductId())).findFirst();
+			if (op.isPresent()) {
+				ProductEntity entity = op.get();
+				entity.setStockQuantity(entity.getStockQuantity() + fromStockModel.getQuantity());
+				entitytoUpdate.add(entity);
 			} else {
 				throw new DataNotFoundException(ProductEntity.class.getName(),
 						fromStockModel.getProductId() + " ID Lİ KAYITLAR BULUNAMADI");

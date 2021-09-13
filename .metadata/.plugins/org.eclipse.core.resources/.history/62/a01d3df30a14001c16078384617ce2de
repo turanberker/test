@@ -1,0 +1,16 @@
+package com.berker.servicebase.exceptions;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+public class NotEnoughStock extends BaseException {
+
+	protected NotEnoughStock() {
+
+	}
+
+	public NotEnoughStock(String message,String className) {
+		super(message,className);
+	}
+}

@@ -1,0 +1,46 @@
+package com.berker.servicebase.exceptions;
+
+import java.util.Date;
+
+import org.springframework.http.HttpStatus;
+
+import feign.FeignException;
+
+public class BaseException extends FeignException {
+	
+	private static final long serialVersionUID = 1L;
+
+	private Date timeStamp;
+
+	private String className;
+
+	
+	public BaseException() {
+		super(123456,"HATA");
+	}
+
+	public BaseException(String message, String className) {
+		super(123456,message);
+		this.timeStamp = new Date();
+		this.className = className;
+	}
+
+	public Date getTimeStamp() {
+		return timeStamp;
+	}
+
+	public void setTimeStamp(Date timeStamp) {
+		this.timeStamp = timeStamp;
+	}
+
+	public String getClassName() {
+		return className;
+	}
+
+	public void setClassName(String className) {
+		this.className = className;
+	}
+	
+	
+
+}

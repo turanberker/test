@@ -44,7 +44,7 @@ public class CategoryRestController extends BaseRestController {
 	}
 	
 	@DeleteMapping(path = "/delete/{id}",  produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity deleteById(@PathVariable(value = "id") @Positive @NotNull Long id) {
-		return new ResponseEntity(HttpStatus.OK);
+	public ResponseEntity<Object> deleteById(@PathVariable(value = "id") @Positive @NotNull Long id) {
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
 }

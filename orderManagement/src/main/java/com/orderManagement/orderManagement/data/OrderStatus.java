@@ -5,7 +5,8 @@ public enum OrderStatus {
 	
 	NEW(0),
 	SENT(1),
-	RECEIVED(2),
+	COMPLETED(2),
+	CANCELLED(3),
 	;
 	
 	private final int value;

@@ -1,0 +1,176 @@
+package com.orderManagement.orderManagement.services;
+
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.berker.servicebase.exceptions.DataNotFoundException;
+import com.berker.servicebase.exceptions.NotEnoughStock;
+import com.orderManagement.orderManagement.data.OrderStatus;
+import com.orderManagement.orderManagement.dto.AddNewItemModel;
+import com.orderManagement.orderManagement.dto.ChangeAddressModel;
+import com.orderManagement.orderManagement.dto.NewOrderDetailModel;
+import com.orderManagement.orderManagement.dto.NewOrderModel;
+import com.orderManagement.orderManagement.dto.OmProductModel;
+import com.orderManagement.orderManagement.dto.OmStockItemMovementModel;
+import com.orderManagement.orderManagement.dto.OmStockMovementModel;
+import com.orderManagement.orderManagement.entity.OrderDetailEntity;
+import com.orderManagement.orderManagement.entity.OrderEntity;
+import com.orderManagement.orderManagement.exceptions.OrderCanNotEdittedException;
+import com.orderManagement.orderManagement.feigns.ProductFeignClient;
+import com.orderManagement.orderManagement.repositories.OrderDetailRepository;
+import com.orderManagement.orderManagement.repositories.OrderRepository;
+import com.pim.service.ProductService;
+
+@Service
+public class OrderService {
+
+	@Autowired
+	private OrderRepository repository;
+
+	@Autowired
+	private OrderDetailRepository detailRepository;
+
+	@Autowired
+	private ProductFeignClient productClient;
+
+	@Transactional(rollbackFor = Exception.class)
+	public void save(@Valid NewOrderModel newOrder) {
+
+		List<Long> productIdListe = new ArrayList<Long>();
+
+		for (NewOrderDetailModel detail : newOrder.getOrderDetailList()) {
+			productIdListe.add(detail.getProductId());
+		}
+		ResponseEntity<List<OmProductModel>> response = productClient.getByIdList(productIdListe);
+		OmStockMovementModel reduceFromStockModel = new OmStockMovementModel();
+		reduceFromStockModel.setItemList(new ArrayList<>());
+
+		if (response.getStatusCode().equals(HttpStatus.OK)) {
+			List<OmProductModel> productList = response.getBody();
+			OrderEntity orderEntity = new OrderEntity();
+
+			orderEntity.setAddress(newOrder.getAddress());
+
+			orderEntity.setDetailList(new ArrayList<OrderDetailEntity>());
+			for (final OmProductModel product : productList) {
+				OrderDetailEntity detail = new OrderDetailEntity();
+				detail.setOrder(orderEntity);
+				detail.setCategoryName(product.getCategory().getName());
+				detail.setProductId(product.getId());
+				detail.setProdutName(product.getName());
+				detail.setUnitPrice(product.getPrice());
+				Optional<NewOrderDetailModel> reqProduct = newOrder.getOrderDetailList().stream()
+						.filter(e -> e.getProductId().equals(product.getId())).findFirst();
+
+				if (reqProduct.get().getQuantity() > product.getStockQuantity()) {
+					throw new NotEnoughStock(
+							MessageFormat.format("{0} isimli ürünün miktarı yetersiz", product.getName()),
+							OrderService.class.getName());
+
+				} else {
+					detail.setQuantity(reqProduct.get().getQuantity());
+				}
+				orderEntity.getDetailList().add(detail);
+
+				OmStockItemMovementModel reduceItemModel = new OmStockItemMovementModel();
+				reduceItemModel.setProductId(product.getId());
+				reduceItemModel.setQuantity(reqProduct.get().getQuantity());
+				reduceFromStockModel.getItemList().add(reduceItemModel);
+			}
+			repository.save(orderEntity);
+
+			if (productClient.reduceFromStock(reduceFromStockModel).getStatusCode() != HttpStatus.OK) {
+				throw new NotEnoughStock("YETERSİZ STOK", OrderService.class.getName());
+			}
+
+		} else {
+			throw new RuntimeException("Error on Product Service");
+		}
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	public void cancelOrder(@NotNull @Positive Long orderId) {
+
+		OrderEntity orderToCancel = findOrder(orderId);
+		orderToCancel.setOrderStatus(OrderStatus.CANCELLED);
+		repository.save(orderToCancel);
+
+		List<OrderDetailEntity> detailList = detailRepository.getByOrderId(orderId);
+
+		List<OmStockItemMovementModel> itemtoMoveList = detailList.stream().map(e -> {
+			OmStockItemMovementModel dm = new OmStockItemMovementModel();
+			dm.setProductId(e.getId());
+			dm.setQuantity(e.getQuantity());
+			return dm;
+		}).collect(Collectors.toList());
+		OmStockMovementModel moveModel = new OmStockMovementModel();
+		moveModel.setItemList(itemtoMoveList);
+
+		HttpStatus result = productClient.addToStock(moveModel).getStatusCode();
+		if (result != HttpStatus.OK) {
+			throw new RuntimeException("Error Occured on Product Service");
+		}
+
+	}
+
+	private OrderEntity findOrder(Long orderId) {
+		Optional<OrderEntity> order = repository.findById(orderId);
+		if (order.isPresent()) {
+			return order.get();
+		} else {
+			throw new DataNotFoundException(MessageFormat.format("Order with id={0} is not found", orderId),
+					OrderService.class.getName());
+		}
+	}
+
+	private void isOrderEdittable(OrderEntity order) {
+
+		if (!OrderStatus.NEW.equals(order.getOrderStatus())) {
+			throw new OrderCanNotEdittedException(order.getId(), order.getOrderStatus(), OrderService.class.getName());
+		}
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	public void changeAddress(@Valid ChangeAddressModel changeAddressModel) {
+		OrderEntity order = findOrder(changeAddressModel.getOrderId());
+		isOrderEdittable(order);
+		order.setAddress(changeAddressModel.getNewAddress());
+		repository.save(order);
+
+	}
+
+	public void addNewItem(@Valid AddNewItemModel newDetailModel) {
+		OrderEntity order = findOrder(newDetailModel.getOrderId());
+		isOrderEdittable(order);
+		
+		OrderDetailEntity detail=detailRepository.findByOrderIdAndProductId(newDetailModel.getOrderId(), newDetailModel.getNewItem().getProductId());
+		if(detail==null) {
+			ResponseEntity<OmProductModel> response = productClient.getById(newDetailModel.getNewItem().getProductId());
+			if(response.getStatusCode()==HttpStatus.OK) {
+				OmProductModel productModel=response.getBody();
+				OrderDetailEntity detailEntity=new OrderDetailEntity(productModel);
+				detailEntity.setQuantity(newDetailModel.getNewItem().getQuantity());
+				
+			}else {
+				throw new DataNotFoundException(OrderService.class.getName(),
+						MessageFormat.format("Product with ID={0} is not exists", newDetailModel.getNewItem().getProductId()));
+			}
+		}else {
+			
+			
+		}
+	}
+}
